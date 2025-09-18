@@ -64,7 +64,8 @@
   </form>
 
   <script>
-    const endpoint = "https://script.google.com/macros/s/AKfycbzjU7jR7KFVi7CRNmzMW8YdVeJm6uTrQhFkjKudaXmupUnEwzkK_yLfByGTE5TzUV_u/exec"; // pegar la URL del Apps Script
+    // Usamos el proxy de Netlify
+    const endpoint = "/.netlify/functions/proxy";
 
     function calcEdad(fecha) {
       if (!fecha) return;
@@ -109,15 +110,20 @@
         total: calcTotal()
       };
 
-      await fetch(endpoint, {
+      let resp = await fetch(endpoint, {
         method: "POST",
         body: JSON.stringify(data),
         headers: { "Content-Type": "application/json" }
       });
 
-      alert("Formulario enviado con éxito!");
-      form.reset();
-      document.getElementById("total").innerText = 0;
+      let result = await resp.json();
+      if (result.result === "OK") {
+        alert("Formulario enviado con éxito!");
+        form.reset();
+        document.getElementById("total").innerText = 0;
+      } else {
+        alert("Error al enviar: " + (result.error || "intente nuevamente"));
+      }
     });
   </script>
 </body>
