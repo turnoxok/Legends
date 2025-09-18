@@ -110,10 +110,53 @@
       color: #084D1F;
       text-align: right;
     }
+
+     /* ===== LOADER ===== */
+    #loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #084D1F;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      z-index: 9999;
+    }
+
+    #loader img {
+      width: 120px;
+      height: auto;
+      animation: pulse 1.5s infinite ease-in-out;
+    }
+
+    #loader p {
+      color: #F5F6F2;
+      margin-top: 20px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.15); opacity: 0.8; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .hidden {
+      display: none !important;
+    }
   </style>
 </head>
 <body>
-
+ <!-- LOADER -->
+  <div id="loader">
+    <img src="https://i.ibb.co/GfJfM48J/Tilcara-logo-con-sombra.png" alt="Escudo del Club">
+    <p>Cargando...</p>
+  </div>
   <!-- Portada -->
   <div class="portada">
     <img src="https://i.ibb.co/cKKw9dpV/portada-web-legends.png" alt="Encuentro Rugby Veteranos">
@@ -179,6 +222,12 @@
 
   <script>
     const endpoint = "/.netlify/functions/proxy";
+    const loader = document.getElementById("loader");
+
+    // Mostrar loader al inicio
+    window.addEventListener("load", () => {
+      setTimeout(() => loader.classList.add("hidden"), 1200); // se oculta luego de 1.2s
+    });
 
     // === FECHA DE NACIMIENTO ===
     const yearSelect = document.getElementById("dobYear");
@@ -261,6 +310,7 @@
     // === ENVÍO ===
     document.getElementById("rugbyForm").addEventListener("submit", async (e) => {
       e.preventDefault();
+      loader.classList.remove("hidden"); // mostrar loader mientras se envía
       let form = e.target;
       let data = {
         club: form.club.value,
@@ -283,6 +333,7 @@
       });
 
       let result = await resp.json();
+      loader.classList.add("hidden"); // ocultar loader
       if (result.result === "OK") {
         alert("Inscripción enviada con éxito!");
         form.reset();
