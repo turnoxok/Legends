@@ -149,6 +149,72 @@
     .hidden {
       display: none !important;
     }
+
+    /* === MODAL === */
+.modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  background: #F5F6F2;
+  border-radius: 18px;
+  padding: 30px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+  animation: popIn 0.4s ease;
+}
+
+.modal-content img {
+  width: 90px;
+  margin-bottom: 16px;
+}
+
+.modal-content h3 {
+  color: #084D1F;
+  margin-bottom: 10px;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.modal-content p {
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 1rem;
+}
+
+.modal-content button {
+  padding: 10px 20px;
+  background: #084D1F;
+  color: #F5F6F2;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.modal-content button:hover {
+  background: #0A702A;
+}
+
+@keyframes popIn {
+  from { transform: scale(0.7); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
   </style>
 </head>
 <body>
@@ -157,6 +223,18 @@
     <img src="https://i.ibb.co/bj3jvMC3/Tilcara-logo-con-sombra.png" alt="Escudo del Club">
     <p>Ya casi...</p>
   </div>
+
+  <!-- Modal de éxito -->
+<div id="successModal" class="modal hidden">
+  <div class="modal-content">
+    <img src="escudo.png" alt="Escudo Club">
+    <h3>¡Inscripción enviada con éxito!</h3>
+    <p>Gracias por participar.</p>
+    <button onclick="closeModal()">Aceptar</button>
+  </div>
+</div>
+
+  
   <!-- Portada -->
   <div class="portada">
     <img src="https://i.ibb.co/cKKw9dpV/portada-web-legends.png" alt="Encuentro Rugby Veteranos">
@@ -306,41 +384,56 @@
       document.getElementById("total").innerText = total;
       return total;
     }
+// === ENVÍO ===
+document.getElementById("rugbyForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  loader.classList.remove("hidden"); // mostrar loader mientras se envía
 
-    // === ENVÍO ===
-    document.getElementById("rugbyForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      loader.classList.remove("hidden"); // mostrar loader mientras se envía
-      let form = e.target;
-      let data = {
-        club: form.club.value,
-        nombre: form.nombre.value,
-        apellido: form.apellido.value,
-        fechaNacimiento: form.fechaNacimiento.value,
-        edad: form.edad.value,
-        cuil: form.cuil.value,
-        obraSocial: form.obraSocial.value,
-        cualObra: form.cualObra.value,
-        tipoEntrada: form.tipoEntrada.value == "30000" ? "Jugador" : "Solo comida",
-        invitados: form.invitados.value,
-        total: calcTotal()
-      };
+  let form = e.target;
+  let data = {
+    club: form.club.value,
+    nombre: form.nombre.value,
+    apellido: form.apellido.value,
+    fechaNacimiento: form.fechaNacimiento.value,
+    edad: form.edad.value,
+    cuil: form.cuil.value,
+    obraSocial: form.obraSocial.value,
+    cualObra: form.cualObra.value,
+    tipoEntrada: form.tipoEntrada.value == "30000" ? "Jugador" : "Solo comida",
+    invitados: form.invitados.value,
+    total: calcTotal()
+  };
 
-      let resp = await fetch(endpoint, {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: { "Content-Type": "application/json" }
-      });
+  try {
+    let resp = await fetch(endpoint, {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: { "Content-Type": "application/json" }
+    });
 
-      let result = await resp.json();
-      loader.classList.add("hidden"); // ocultar loader
-      if (result.result === "OK") {
-        alert("Inscripción enviada con éxito!");
-        form.reset();
-        document.getElementById("total").innerText = 0;
-      } else {
-        alert("Error al enviar: " + (result.error || "intente nuevamente"));
-      }
+    let result = await resp.json();
+    loader.classList.add("hidden"); // ocultar loader
+
+    if (result.result === "OK") {
+      // mostrar modal de éxito
+      document.getElementById("successModal").classList.remove("hidden");
+      form.reset();
+      document.getElementById("total").innerText = 0;
+    } else {
+      alert("Error al enviar: " + (result.error || "intente nuevamente"));
+    }
+  } catch (err) {
+    loader.classList.add("hidden");
+    alert("Error de conexión, intente nuevamente.");
+  }
+});
+
+// Función para cerrar modal
+function closeModal() {
+  document.getElementById("successModal").classList.add("hidden");
+}
+
+   
     });
   </script>
 </body>
