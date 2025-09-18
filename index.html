@@ -10,96 +10,110 @@
       margin: 0;
       font-family: 'Oswald', sans-serif;
       background-color: #F5F6F2;
-      color: #0A702A;
-    }
-
-    header {
-      text-align: center;
-      background-color: #0A702A;
-      color: #F5F6F2;
-      padding: 10px 0;
+      color: #084D1F;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     .portada {
       width: 100%;
       max-width: 1080px;
-      margin: 0 auto;
     }
 
     .portada img {
       width: 100%;
       height: auto;
-      border-bottom: 5px solid #0A702A;
+      display: block;
     }
 
     .form-container {
-      max-width: 600px;
+      max-width: 480px;
+      width: 90%;
       background: white;
-      margin: 20px auto;
-      padding: 20px;
+      margin: 20px auto 40px auto;
+      padding: 24px;
       border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
     }
 
     h2 {
       text-align: center;
       margin-bottom: 20px;
-      font-size: 1.6rem;
+      font-size: 1.4rem;
       font-weight: 600;
-      color: #0A702A;
+      color: #084D1F;
     }
 
     label {
       display: block;
       margin-top: 12px;
       font-weight: 600;
-      color: #0A702A;
+      color: #084D1F;
+      font-size: 0.95rem;
     }
 
     input, select {
       width: 100%;
-      padding: 10px;
+      padding: 10px 12px;
       margin-top: 6px;
-      border: 2px solid #0A702A;
-      border-radius: 8px;
+      border: 2px solid #084D1F;
+      border-radius: 10px;
       font-size: 1rem;
+      background-color: #F5F6F2;
+      appearance: none;
+      outline: none;
+      transition: 0.2s ease;
+    }
+
+    input:focus, select:focus {
+      border-color: #0A702A;
+      background: #ffffff;
+      box-shadow: 0 0 6px rgba(10,112,42,0.4);
+    }
+
+    .dob-container {
+      display: flex;
+      gap: 10px;
+    }
+
+    .dob-container select {
+      flex: 1;
     }
 
     button {
       width: 100%;
-      padding: 12px;
-      background-color: #0A702A;
+      padding: 14px;
+      background-color: #084D1F;
       color: #F5F6F2;
       font-size: 1.1rem;
       font-weight: 600;
       border: none;
-      border-radius: 8px;
-      margin-top: 20px;
+      border-radius: 10px;
+      margin-top: 24px;
       cursor: pointer;
-      transition: background 0.2s ease-in-out;
+      transition: background 0.2s ease-in-out, transform 0.1s;
     }
 
     button:hover {
-      background-color: #084d1f;
+      background-color: #0A702A;
+      transform: scale(1.02);
     }
 
     .total {
       font-size: 18px;
       font-weight: bold;
-      margin-top: 15px;
-      color: #0A702A;
+      margin-top: 18px;
+      color: #084D1F;
       text-align: right;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Encuentro de Rugby Veteranos</h1>
-  </header>
 
   <!-- Portada -->
   <div class="portada">
-    <img src="https://i.ibb.co/cKKw9dpV/portada-web-legends.png" alt="Encuentro Rugby Veteranos">
+    <img src="portada.jpg" alt="Encuentro Rugby Veteranos">
   </div>
 
   <!-- Formulario -->
@@ -124,8 +138,12 @@
       <input type="text" name="apellido" required>
 
       <label>Fecha de nacimiento</label>
-      <input type="date" name="fechaNacimiento" required onchange="calcEdad(this.value)">
-
+      <div class="dob-container">
+        <select id="dobYear" required></select>
+        <select id="dobMonth" required></select>
+        <select id="dobDay" required></select>
+      </div>
+      <input type="hidden" name="fechaNacimiento" id="fechaNacimiento">
       <label>Edad</label>
       <input type="number" name="edad" id="edad" readonly>
 
@@ -159,6 +177,58 @@
   <script>
     const endpoint = "/.netlify/functions/proxy";
 
+    // === FECHA DE NACIMIENTO ===
+    const yearSelect = document.getElementById("dobYear");
+    const monthSelect = document.getElementById("dobMonth");
+    const daySelect = document.getElementById("dobDay");
+
+    // llenar años (1950 - año actual)
+    let currentYear = new Date().getFullYear();
+    for (let y = currentYear; y >= 1950; y--) {
+      let opt = document.createElement("option");
+      opt.value = y;
+      opt.textContent = y;
+      yearSelect.appendChild(opt);
+    }
+
+    // meses
+    const meses = ["Enero","Febrero","Marzo","Abril","Mayo","Junio",
+                   "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+    meses.forEach((m, i) => {
+      let opt = document.createElement("option");
+      opt.value = i + 1;
+      opt.textContent = m;
+      monthSelect.appendChild(opt);
+    });
+
+    // días dinámicos
+    function llenarDias() {
+      daySelect.innerHTML = "";
+      let year = yearSelect.value;
+      let month = monthSelect.value;
+      if (!year || !month) return;
+      let daysInMonth = new Date(year, month, 0).getDate();
+      for (let d = 1; d <= daysInMonth; d++) {
+        let opt = document.createElement("option");
+        opt.value = d;
+        opt.textContent = d;
+        daySelect.appendChild(opt);
+      }
+    }
+
+    yearSelect.addEventListener("change", llenarDias);
+    monthSelect.addEventListener("change", llenarDias);
+    daySelect.addEventListener("change", actualizarFecha);
+
+    function actualizarFecha() {
+      if (yearSelect.value && monthSelect.value && daySelect.value) {
+        let fecha = `${yearSelect.value}-${String(monthSelect.value).padStart(2,'0')}-${String(daySelect.value).padStart(2,'0')}`;
+        document.getElementById("fechaNacimiento").value = fecha;
+        calcEdad(fecha);
+      }
+    }
+
+    // === FUNCIONES DE CÁLCULO ===
     function calcEdad(fecha) {
       if (!fecha) return;
       let nacimiento = new Date(fecha);
@@ -185,6 +255,7 @@
       return total;
     }
 
+    // === ENVÍO ===
     document.getElementById("rugbyForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       let form = e.target;
