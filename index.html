@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Encuentro Rugby Veteranos</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    label { display:block; margin-top: 10px; }
+    input, select, button { width: 100%; padding: 8px; margin-top: 5px; }
+    .total { font-size: 18px; font-weight: bold; margin-top: 15px; }
+  </style>
+</head>
+<body>
+  <h2>Formulario de Inscripción</h2>
+  <form id="rugbyForm">
+    <label>Club/Agrupación</label>
+    <select name="club" required>
+      <option value="">-- Seleccionar --</option>
+      <option>Club 1</option>
+      <option>Club 2</option>
+      <option>Club 3</option>
+      <option>Club 4</option>
+      <option>Club 5</option>
+      <option>Club 6</option>
+    </select>
+
+    <label>Nombre</label>
+    <input type="text" name="nombre" required>
+
+    <label>Apellido</label>
+    <input type="text" name="apellido" required>
+
+    <label>Fecha de nacimiento</label>
+    <input type="date" name="fechaNacimiento" required onchange="calcEdad(this.value)">
+
+    <label>Edad</label>
+    <input type="number" name="edad" id="edad" readonly>
+
+    <label>CUIL/CUIT</label>
+    <input type="text" name="cuil" required>
+
+    <label>¿Tiene obra social?</label>
+    <select name="obraSocial" id="obraSocial" onchange="toggleObraSocial()">
+      <option value="No">No</option>
+      <option value="Sí">Sí</option>
+    </select>
+
+    <label id="cualLabel" style="display:none;">¿Cuál?</label>
+    <input type="text" name="cualObra" id="cualObra" style="display:none;">
+
+    <label>Opción de participación</label>
+    <select name="tipoEntrada" id="tipoEntrada" onchange="calcTotal()">
+      <option value="30000">Jugador - $30.000</option>
+      <option value="24000">Solo comida - $24.000</option>
+    </select>
+
+    <label>Invitados (solo comida, $24.000 c/u)</label>
+    <input type="number" name="invitados" id="invitados" value="0" min="0" onchange="calcTotal()">
+
+    <div class="total">Total a abonar: $<span id="total">0</span></div>
+
+    <button type="submit">Enviar</button>
+  </form>
+
+  <script>
+    const endpoint = "https://script.google.com/macros/s/AKfycbzjU7jR7KFVi7CRNmzMW8YdVeJm6uTrQhFkjKudaXmupUnEwzkK_yLfByGTE5TzUV_u/exec"; // pegar la URL del Apps Script
+
+    function calcEdad(fecha) {
+      if (!fecha) return;
+      let nacimiento = new Date(fecha);
+      let hoy = new Date();
+      let edad = hoy.getFullYear() - nacimiento.getFullYear();
+      let m = hoy.getMonth() - nacimiento.getMonth();
+      if (m < 0 || (m === 0 && hoy.getDate() < nacimiento.getDate())) {
+        edad--;
+      }
+      document.getElementById("edad").value = edad;
+    }
+
+    function toggleObraSocial() {
+      let select = document.getElementById("obraSocial").value;
+      document.getElementById("cualLabel").style.display = select === "Sí" ? "block" : "none";
+      document.getElementById("cualObra").style.display = select === "Sí" ? "block" : "none";
+    }
+
+    function calcTotal() {
+      let entrada = parseInt(document.getElementById("tipoEntrada").value);
+      let invitados = parseInt(document.getElementById("invitados").value) || 0;
+      let total = entrada + (invitados * 24000);
+      document.getElementById("total").innerText = total;
+      return total;
+    }
+
+    document.getElementById("rugbyForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      let form = e.target;
+      let data = {
+        club: form.club.value,
+        nombre: form.nombre.value,
+        apellido: form.apellido.value,
+        fechaNacimiento: form.fechaNacimiento.value,
+        edad: form.edad.value,
+        cuil: form.cuil.value,
+        obraSocial: form.obraSocial.value,
+        cualObra: form.cualObra.value,
+        tipoEntrada: form.tipoEntrada.value == "30000" ? "Jugador" : "Solo comida",
+        invitados: form.invitados.value,
+        total: calcTotal()
+      };
+
+      await fetch(endpoint, {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: { "Content-Type": "application/json" }
+      });
+
+      alert("Formulario enviado con éxito!");
+      form.reset();
+      document.getElementById("total").innerText = 0;
+    });
+  </script>
+</body>
+</html>
