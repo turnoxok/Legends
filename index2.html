@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+ 
+
+<!-- Título y descripción -->
+<title>Tilcara Legends | Formulario Jugadores</title>
+<meta name="description" content="Formulario de inscripción para el encuentro de rugby de veteranos. Confirma tu asistencia.">
+
+<!-- Icono para pestañas / navegador -->
+<link rel="icon" type="image/png" href="https://i.ibb.co/nN8LPTjD/logo-verde.png" />
+
+<!-- Color de la barra del navegador (Chrome / Edge móvil) -->
+<meta name="theme-color" content="#084D1F">
+
+<!-- Open Graph (WhatsApp / Facebook / LinkedIn) -->
+<meta property="og:title" content="Tilcara Legends | Formulario Jugadores">
+<meta property="og:description" content="Formulario de inscripción para el encuentro de rugby de veteranos. Confirma tu asistencia.">
+<meta property="og:image" content="https://i.ibb.co/nN8LPTjD/logo-verde.png">
+<meta property="og:url" content="https://tilcaralegends.netlify.app/">
+<meta property="og:type" content="website">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Tilcara Legends | Formulario Jugadores">
+<meta name="twitter:description" content="Formulario de inscripción para el encuentro de rugby de veteranos. Confirma tu asistencia.">
+<meta name="twitter:image" content="https://tilcaralegends.netlify.app/">
+
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "Montserrat", sans-serif;
+      background-color: #F5F6F2;
+      color: #084D1F;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .portada {
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .portada img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .form-container {
+      max-width: 480px;
+      width: 80%;
+      background: white;
+      margin: 20px auto 40px auto;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #084D1F;
+    }
+
+    label {
+      display: block;
+      margin-top: 12px;
+      font-weight: 600;
+      color: #084D1F;
+      font-size: 0.95rem;
+    }
+
+    input, select {
+      width: 90%;
+      padding: 10px 12px;
+      margin-top: 6px;
+      border: 2px solid #084D1F;
+      border-radius: 10px;
+      font-size: 1rem;
+      background-color: #F5F6F2;
+      appearance: none;
+      outline: none;
+      transition: 0.2s ease;
+    }
+
+    input:focus, select:focus {
+      border-color: #0A702A;
+      background: #ffffff;
+      box-shadow: 0 0 6px rgba(10,112,42,0.4);
+    }
+
+    .dob-container {
+      display: flex;
+      gap: 10px;
+    }
+
+    .dob-container select {
+      flex: 1;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background-color: #084D1F;
+      color: #F5F6F2;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      margin-top: 24px;
+      cursor: pointer;
+      transition: background 0.2s ease-in-out, transform 0.1s;
+    }
+
+    button:hover {
+      background-color: #0A702A;
+      transform: scale(1.02);
+    }
+
+    .total {
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 18px;
+      color: #084D1F;
+      text-align: right;
+    }
+
+     /* ===== LOADER ===== */
+    #loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #084D1F;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      z-index: 9999;
+    }
+
+    #loader img {
+      width: 120px;
+      height: auto;
+      animation: pulse 1.5s infinite ease-in-out;
+    }
+
+    #loader p {
+      color: #F5F6F2;
+      margin-top: 20px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.15); opacity: 0.8; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* === MODAL === */
+.modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  background: #F5F6F2;
+  border-radius: 18px;
+  padding: 30px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+  animation: popIn 0.4s ease;
+}
+
+.modal-content img {
+  width: 90px;
+  margin-bottom: 16px;
+}
+
+.modal-content h3 {
+  color: #084D1F;
+  margin-bottom: 10px;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.modal-content p {
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 1rem;
+}
+
+.modal-content button {
+  padding: 10px 20px;
+  background: #084D1F;
+  color: #F5F6F2;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.modal-content button:hover {
+  background: #0A702A;
+}
+
+@keyframes popIn {
+  from { transform: scale(0.7); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+  </style>
+</head>
+<body>
+ <!-- LOADER -->
+  <div id="loader">
+    <img src="https://i.ibb.co/GfJfM48J/Tilcara-logo-con-sombra.png" alt="Escudo del Club">
+    
+  </div>
+
+  <!-- Modal de éxito -->
+<div id="successModal" class="modal hidden">
+  <div class="modal-content">
+    <img src="https://i.ibb.co/nN8LPTjD/logo-verde.png" alt="Escudo Club">
+    <h3>¡Inscripción enviada con éxito!</h3>
+    <p>Gracias por participar.</p>
+    <button onclick="closeModal()">Aceptar</button>
+  </div>
+</div>
+
+  
+  <!-- Portada -->
+  <div class="portada">
+    <img src="https://i.ibb.co/cKKw9dpV/portada-web-legends.png" alt="Encuentro Rugby Veteranos">
+  </div>
+<!-- Botón visible para todos -->
+  <div style="text-align:center; margin:15px 0;">
+    <button onclick="window.location.href='https://administradorlegends.netlify.app'">
+      Ver Jugadores Inscriptos
+    </button>
+    
+  </div>
+  
+  <div class="form-container">
+    <h2>Formulario de Inscripción</h2>
+    <form id="rugbyForm">
+      <label>Club/Agrupación</label>
+      <select name="club" required>
+        <option value="">-- Seleccionar --</option>
+        <option>Charoga (Santa Fe)</option>
+        <option>Querandí (Santa Fe)</option>
+        <option>Vizcachones (Concordia)</option>
+        <option>Jovatos (Rosario)</option>
+        <option>Albatros (Paraná)</option>
+        <option>Tilcara Legends (Paraná)</option>
+        <option>Capibá Señor (Paraná)</option>
+      </select>
+
+      <label>Nombre</label>
+      <input type="text" name="nombre" required>
+
+      <label>Apellido</label>
+      <input type="text" name="apellido" required>
+
+      <label>Fecha de nacimiento</label>
+      <div class="dob-container">
+        <select id="dobYear" required></select>
+        <select id="dobMonth" required></select>
+        <select id="dobDay" required></select>
+      </div>
+      <input type="hidden" name="fechaNacimiento" id="fechaNacimiento">
+      <label>Edad</label>
+      <input type="number" name="edad" id="edad" readonly>
+
+     <label>CUIL/CUIT</label>
+     <input type="text" name="cuil" id="cuil" maxlength="11" pattern="\d{11}" required placeholder="Ej: 20281234565">
+
+
+      <label>¿Tiene obra social?</label>
+      <select name="obraSocial" id="obraSocial" onchange="toggleObraSocial()">
+        <option value="No">No</option>
+        <option value="Sí">Sí</option>
+      </select>
+
+      <label id="cualLabel" style="display:none;">¿Cuál?</label>
+      <input type="text" name="cualObra" id="cualObra" style="display:none;">
+
+      <label>Seleccioná una Opción</label>
+      <select name="tipoEntrada" id="tipoEntrada" onchange="calcTotal()">
+        <option value="30000">Jugador - $30.000</option>
+        <option value="24000">Solo 3er tiempo - $24.000</option>
+      </select>
+
+      <label>Llevas Invitados? (Familires, amigos), etc..(sólo 3er tiempo, $24.000 c/u)</label>
+      <input type="number" name="invitados" id="invitados" value="0" min="0" onchange="calcTotal()">
+
+      <div class="total">Calcular total a abonar: $<span id="total">0</span></div>
+
+      <button type="submit">Enviar inscripción</button>
+    </form>
+  
+
+  </div>
+<a href="https://wa.me/543435020970?text=Hola,%20tengo%20dudas%20con%20el%20formulario%20Legends" target="_blank" 
+   style="display:texto-align:center; inline-block; padding:10px 20px; background:#084D1F; color:white; border-radius:0px; text-decoration:none; font-weight:bold;">
+   ¿Dudas? Chateá por WhatsApp
+</a>
+
+      
+
+  
+  <script>
+    const endpoint = "/.netlify/functions/proxy";
+    const loader = document.getElementById("loader");
+
+    // Mostrar loader al inicio
+    window.addEventListener("load", () => {
+      setTimeout(() => loader.classList.add("hidden"), 1200); // se oculta luego de 1.2s
+    });
+
+    // === FECHA DE NACIMIENTO ===
+    const yearSelect = document.getElementById("dobYear");
+    const monthSelect = document.getElementById("dobMonth");
+    const daySelect = document.getElementById("dobDay");
+
+    // llenar años (1950 - año actual)
+    let currentYear = new Date().getFullYear();
+    for (let y = currentYear; y >= 1950; y--) {
+      let opt = document.createElement("option");
+      opt.value = y;
+      opt.textContent = y;
+      yearSelect.appendChild(opt);
+    }
+
+    // meses
+    const meses = ["Enero","Febrero","Marzo","Abril","Mayo","Junio",
+                   "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+    meses.forEach((m, i) => {
+      let opt = document.createElement("option");
+      opt.value = i + 1;
+      opt.textContent = m;
+      monthSelect.appendChild(opt);
+    });
+
+    // días dinámicos
+    function llenarDias() {
+      daySelect.innerHTML = "";
+      let year = yearSelect.value;
+      let month = monthSelect.value;
+      if (!year || !month) return;
+      let daysInMonth = new Date(year, month, 0).getDate();
+      for (let d = 1; d <= daysInMonth; d++) {
+        let opt = document.createElement("option");
+        opt.value = d;
+        opt.textContent = d;
+        daySelect.appendChild(opt);
+      }
+    }
+
+    yearSelect.addEventListener("change", llenarDias);
+    monthSelect.addEventListener("change", llenarDias);
+    daySelect.addEventListener("change", actualizarFecha);
+
+    function actualizarFecha() {
+      if (yearSelect.value && monthSelect.value && daySelect.value) {
+        let fecha = `${yearSelect.value}-${String(monthSelect.value).padStart(2,'0')}-${String(daySelect.value).padStart(2,'0')}`;
+        document.getElementById("fechaNacimiento").value = fecha;
+        calcEdad(fecha);
+      }
+    }
+
+  
+
+
+    // === FUNCIONES DE CÁLCULO ===
+    function calcEdad(fecha) {
+      if (!fecha) return;
+      let nacimiento = new Date(fecha);
+      let hoy = new Date();
+      let edad = hoy.getFullYear() - nacimiento.getFullYear();
+      let m = hoy.getMonth() - nacimiento.getMonth();
+      if (m < 0 || (m === 0 && hoy.getDate() < nacimiento.getDate())) {
+        edad--;
+      }
+      document.getElementById("edad").value = edad;
+    }
+
+    function toggleObraSocial() {
+      let select = document.getElementById("obraSocial").value;
+      document.getElementById("cualLabel").style.display = select === "Sí" ? "block" : "none";
+      document.getElementById("cualObra").style.display = select === "Sí" ? "block" : "none";
+    }
+
+    function calcTotal() {
+      let entrada = parseInt(document.getElementById("tipoEntrada").value);
+      let invitados = parseInt(document.getElementById("invitados").value) || 0;
+      let total = entrada + (invitados * 24000);
+      document.getElementById("total").innerText = total;
+      return total;
+    }
+const cuilInput = document.getElementById("cuil");
+
+// Filtrar solo números al escribir
+cuilInput.addEventListener("input", (e) => {
+  e.target.value = e.target.value.replace(/\D/g, "");
+});
+
+// === ENVÍO ===
+document.getElementById("rugbyForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  loader.classList.remove("hidden"); // mostrar loader mientras se envía
+
+  let form = e.target;
+
+  // Validar CUIL/CUIT antes de enviar
+  if (cuilInput.value.length !== 11) {
+    loader.classList.add("hidden");
+    alert("El CUIL/CUIT debe tener exactamente 11 números.");
+    return;
+  }
+
+  let data = {
+    club: form.club.value,
+    nombre: form.nombre.value,
+    apellido: form.apellido.value,
+    fechaNacimiento: form.fechaNacimiento.value,
+    edad: form.edad.value,
+    cuil: cuilInput.value,
+    obraSocial: form.obraSocial.value,
+    cualObra: form.cualObra.value,
+    tipoEntrada: form.tipoEntrada.value == "30000" ? "Jugador" : "Solo comida",
+    invitados: form.invitados.value,
+    total: calcTotal()
+  };
+
+  try {
+    let resp = await fetch(endpoint, {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: { "Content-Type": "application/json" }
+    });
+
+    let result = await resp.json();
+    loader.classList.add("hidden"); // ocultar loader
+
+    if (result.result === "OK") {
+      // mostrar modal de éxito
+      document.getElementById("successModal").classList.remove("hidden");
+      form.reset();
+      document.getElementById("total").innerText = 0;
+    } else {
+      alert("Error al enviar: " + (result.error || "intente nuevamente"));
+    }
+  } catch (err) {
+    loader.classList.add("hidden");
+    alert("Error de conexión, intente nuevamente.");
+  }
+});
+
+// Función para cerrar modal
+function closeModal() {
+  document.getElementById("successModal").classList.add("hidden");
+}
+
+// Calcular total inicial al cargar la página
+window.addEventListener("DOMContentLoaded", () => {
+  calcTotal();
+});
+   
+  </script>
+</body>
+</html>
